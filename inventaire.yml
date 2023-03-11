@@ -1,0 +1,11 @@
+prod:
+  hosts:
+    client1:
+    
+preprod:
+  hosts:
+    client2: 
+
+dev:
+  hosts:  
+    client3:
