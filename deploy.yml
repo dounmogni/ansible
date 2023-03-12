@@ -1,13 +1,18 @@
 ---
 - name: “Apache installation using docker”
-  hosts: client1
+  hosts: client1:client2
   become: true
   vars:
-    ansible_sudo_pass: ansadmin
+    #ansible_sudo_pass: ansadmin retirons le credential pour definir de facon plus securisé
   pre_tasks:
     - name: Install EPEL repo
-      package: name=epel-release state=present
+      package: name= '{{ item }}' state=present
      # when: ansible_distribution == “CentOS”
+      loop:
+        - epel-release
+        - wget
+        - git
+
 
     - name: download pip script
       get_url:
@@ -21,9 +26,24 @@
       pip: name=docker-py
 
   tasks:
+
+    - name: "Copying files to client"
+      template:
+        src: "index.html.j2"
+        dest: "/home/ansadmin/index.html"
+     # notify: restart_apache.
+ # handlers:
+   # - name: restart_apache
+     # service:
+       # name: httpd
+       # state: restarted
+       
+    
     - name: Create Apache container
       docker_container:
         name: webapp
         image: httpd
         ports:
           - "80:80"
+        volumes:
+          - /home/ansadmin/index.html/:/usr/local/apache2/htdocs/index.html
