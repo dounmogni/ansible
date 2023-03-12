@@ -1,0 +1,12 @@
+---
+- name: remove apache
+  hosts: client1
+  become: true
+
+  tasks:
+     - name: remove nginx container
+       docker_container:
+         image: httpd
+         name: Apache
+         state: absent
+  
